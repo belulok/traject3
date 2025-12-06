@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowRightIcon, BoltIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
+import { ArrowRightIcon, BoltIcon, ChevronDownIcon, UserIcon } from '@heroicons/react/24/outline';
 import { MarketVisualization } from '@/components/MarketVisualization';
+import { useAuth } from '@/contexts/AuthContext';
+import { LoginModal } from '@/components/LoginModal';
 
 // Dynamic provocative copy
 const DYNAMIC_COPY = [
@@ -67,6 +69,8 @@ export default function Home() {
   const [selectedTrack, setSelectedTrack] = useState<'explorer' | 'builder'>('explorer');
   const [isTrackDropdownOpen, setIsTrackDropdownOpen] = useState(false);
   const router = useRouter();
+  const { user, isAuthenticated } = useAuth();
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   useEffect(() => {
     // Random copy on mount
@@ -112,6 +116,40 @@ export default function Home() {
       {/* 3D Background (Three.js) */}
       <div className="fixed inset-0 -z-10">
         <MarketVisualization />
+      </div>
+
+      {/* Login Modal */}
+      <LoginModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        onSuccess={() => router.push('/dashboard')}
+      />
+
+      {/* Top Right Button - Dashboard or Login */}
+      <div className="fixed top-4 right-4 z-50">
+        {isAuthenticated && user ? (
+          <button
+            onClick={() => router.push('/dashboard')}
+            className="flex items-center gap-2 px-4 py-2 bg-black/50 backdrop-blur-lg border border-white/10 rounded-full hover:border-[#CFFF04]/50 transition-all group"
+          >
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#CFFF04] to-[#2CFF05] flex items-center justify-center text-black font-bold text-sm">
+              {user.displayName?.[0]?.toUpperCase() || 'U'}
+            </div>
+            <span className="text-white/80 group-hover:text-white text-sm font-medium">
+              Dashboard
+            </span>
+          </button>
+        ) : (
+          <button
+            onClick={() => setShowLoginModal(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-black/50 backdrop-blur-lg border border-white/10 rounded-full hover:border-[#CFFF04]/50 transition-all group"
+          >
+            <UserIcon className="w-5 h-5 text-white/60 group-hover:text-[#CFFF04] transition-colors" />
+            <span className="text-white/80 group-hover:text-white text-sm font-medium">
+              Sign In
+            </span>
+          </button>
+        )}
       </div>
 
       {/* Main Content */}

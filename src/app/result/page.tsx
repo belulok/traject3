@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { IdentityHeaderBar } from '@/components/result/IdentityHeaderBar';
 import { IdentityCardSection } from '@/components/result/IdentityCardSection';
@@ -11,6 +12,7 @@ import { FirstSafeStep } from '@/components/result/FirstSafeStep';
 import { UnlockNextCTA } from '@/components/result/UnlockNextCTA';
 import { FloatingCardsSection, CreatorCard, DAOCard } from '@/components/result/FloatingCardsSection';
 import LoadingAnimation from '@/components/LoadingAnimation';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface Creator {
   id: string;
@@ -102,6 +104,8 @@ export default function ResultPage() {
   const [resultData, setResultData] = useState<ResultData | null>(null);
   const [userQuery, setUserQuery] = useState("I want side income");
   const [userTrack, setUserTrack] = useState<'builder' | 'explorer'>('explorer');
+  const router = useRouter();
+  const { user, isAuthenticated } = useAuth();
 
   const { scrollYProgress } = useScroll();
 
@@ -194,7 +198,7 @@ export default function ResultPage() {
 
       {/* Fixed Header */}
       <div className="fixed top-1 left-0 right-0 z-40">
-        <IdentityHeaderBar userQuery={userQuery} mode={mode} />
+        <IdentityHeaderBar userQuery={userQuery} mode={mode} user={user} isAuthenticated={isAuthenticated} />
       </div>
 
       {/* Track Badge */}
